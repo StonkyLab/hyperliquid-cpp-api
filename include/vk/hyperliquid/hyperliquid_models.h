@@ -1,8 +1,50 @@
-//
-// Created by vitakot on 4/20/26.
-//
+/**
+Hyperliquid Data Models
+
+Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+SPDX-License-Identifier: MIT
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+*/
 
 #ifndef HYPERLIQUID_API_HYPERLIQUID_MODELS_H
 #define HYPERLIQUID_API_HYPERLIQUID_MODELS_H
+
+#include "vk/hyperliquid/hyperliquid_enums.h"
+#include "vk/interface/i_json.h"
+#include <nlohmann/json.hpp>
+#include <vector>
+#include <string>
+
+namespace vk::hyperliquid {
+
+struct Candle final : IJson {
+    std::int64_t startTime{};
+    std::int64_t closeTime{};
+    std::string coin{};
+    std::string interval{};
+    double open{};
+    double close{};
+    double high{};
+    double low{};
+    double volume{};
+    int numTrades{};
+
+    [[nodiscard]] nlohmann::json toJson() const override;
+
+    void fromJson(const nlohmann::json& json) override;
+};
+
+struct FundingRate final : IJson {
+    std::string coin{};
+    double fundingRate{};
+    double premium{};
+    std::int64_t time{};
+
+    [[nodiscard]] nlohmann::json toJson() const override;
+
+    void fromJson(const nlohmann::json& json) override;
+};
+
+} // namespace vk::hyperliquid
 
 #endif // HYPERLIQUID_API_HYPERLIQUID_MODELS_H

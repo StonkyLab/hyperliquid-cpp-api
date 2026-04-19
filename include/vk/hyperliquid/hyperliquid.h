@@ -6,8 +6,8 @@ SPDX-License-Identifier: MIT
 Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
 */
 
-#ifndef INCLUDE_VK_HYPERLIQUID_API_BINANCE_H
-#define INCLUDE_VK_HYPERLIQUID_API_BINANCE_H
+#ifndef INCLUDE_VK_HYPERLIQUID_H
+#define INCLUDE_VK_HYPERLIQUID_H
 
 #include "hyperliquid_models.h"
 
@@ -30,4 +30,4 @@ public:
     static int64_t numberOfMsForCandleInterval(CandleInterval candleInterval);
 };
 }
-#endif //INCLUDE_VK_HYPERLIQUID_API_BINANCE_H
+#endif //INCLUDE_VK_HYPERLIQUID_H

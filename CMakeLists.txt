@@ -26,11 +26,17 @@ if (NOT TARGET vk_common)
 endif ()
 
 set(HEADERS
-        include/vk/hyperliquid/hyperliquid.h)
+        include/vk/hyperliquid/hyperliquid.h
+        include/vk/hyperliquid/hyperliquid_enums.h
+        include/vk/hyperliquid/hyperliquid_models.h
+        include/vk/hyperliquid/hyperliquid_http_session.h
+        include/vk/hyperliquid/hyperliquid_rest_client.h)
 
 set(SOURCES
         src/hyperliquid.cpp
-        include/vk/hyperliquid/hyperliquid_models.h)
+        src/hyperliquid_models.cpp
+        src/hyperliquid_http_session.cpp
+        src/hyperliquid_rest_client.cpp)
 
 if (MODULE_MANAGER)
     add_library(hyperliquid_api SHARED ${SOURCES} ${HEADERS})
