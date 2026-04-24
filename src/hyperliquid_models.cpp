@@ -3,13 +3,13 @@ Hyperliquid Data Models
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
-Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 */
 
-#include "vk/hyperliquid/hyperliquid_models.h"
-#include "vk/utils/json_utils.h"
+#include "stonky/hyperliquid/hyperliquid_models.h"
+#include "stonky/utils/json_utils.h"
 
-namespace vk::hyperliquid {
+namespace stonky::hyperliquid {
 
 nlohmann::json Candle::toJson() const {
     throw std::runtime_error("Unimplemented: Candle::toJson()");
@@ -39,4 +39,4 @@ void FundingRate::fromJson(const nlohmann::json& json) {
     readValue<std::int64_t>(json, "time", time);
 }
 
-} // namespace vk::hyperliquid
+} // namespace stonky::hyperliquid

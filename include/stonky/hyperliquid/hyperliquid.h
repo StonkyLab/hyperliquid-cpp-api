@@ -3,15 +3,15 @@ Hyperliquid Common Stuff
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
-Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 */
 
-#ifndef INCLUDE_VK_HYPERLIQUID_H
-#define INCLUDE_VK_HYPERLIQUID_H
+#ifndef INCLUDE_STONKY_HYPERLIQUID_H
+#define INCLUDE_STONKY_HYPERLIQUID_H
 
 #include "hyperliquid_models.h"
 
-namespace vk::hyperliquid {
+namespace stonky::hyperliquid {
 class Hyperliquid {
 public:
     /**
@@ -30,4 +30,4 @@ public:
     static int64_t numberOfMsForCandleInterval(CandleInterval candleInterval);
 };
 }
-#endif //INCLUDE_VK_HYPERLIQUID_H
+#endif //INCLUDE_STONKY_HYPERLIQUID_H

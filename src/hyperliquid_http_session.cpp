@@ -3,16 +3,16 @@ Hyperliquid HTTPS Session
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
-Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 */
 
-#include "vk/hyperliquid/hyperliquid_http_session.h"
+#include "stonky/hyperliquid/hyperliquid_http_session.h"
 #include "nlohmann/json.hpp"
 #include <boost/asio/ssl.hpp>
 #include <boost/beast/version.hpp>
 #include <openssl/err.h>
 
-namespace vk::hyperliquid {
+namespace stonky::hyperliquid {
 namespace ssl = boost::asio::ssl;
 using tcp = net::ip::tcp;
 
@@ -71,4 +71,4 @@ http::response<http::string_body> HTTPSession::P::request(http::request<http::st
 
     return response;
 }
-} // namespace vk::hyperliquid
+} // namespace stonky::hyperliquid

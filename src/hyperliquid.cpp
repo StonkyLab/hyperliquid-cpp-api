@@ -3,11 +3,11 @@ Hyperliquid Common Stuff
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
-Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 */
-#include "vk/hyperliquid/hyperliquid.h"
+#include "stonky/hyperliquid/hyperliquid.h"
 
-namespace vk::hyperliquid {
+namespace stonky::hyperliquid {
 int64_t Hyperliquid::numberOfMsForCandleInterval(const CandleInterval candleInterval) {
     switch (candleInterval) {
         case CandleInterval::_1m:

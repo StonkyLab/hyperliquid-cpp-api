@@ -3,11 +3,11 @@ Hyperliquid HTTPS Session
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
-Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 */
 
-#ifndef INCLUDE_VK_HYPERLIQUID_HTTP_SESSION_H
-#define INCLUDE_VK_HYPERLIQUID_HTTP_SESSION_H
+#ifndef INCLUDE_STONKY_HYPERLIQUID_HTTP_SESSION_H
+#define INCLUDE_STONKY_HYPERLIQUID_HTTP_SESSION_H
 
 #include <boost/asio/connect.hpp>
 #include <boost/beast/core.hpp>
@@ -15,7 +15,7 @@ Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
 #include <string>
 #include <nlohmann/json_fwd.hpp>
 
-namespace vk::hyperliquid {
+namespace stonky::hyperliquid {
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace net = boost::asio;
@@ -31,6 +31,6 @@ public:
 
     [[nodiscard]] http::response<http::string_body> post(const std::string& path, const nlohmann::json& json) const;
 };
-} // namespace vk::hyperliquid
+} // namespace stonky::hyperliquid
 
-#endif // INCLUDE_VK_HYPERLIQUID_HTTP_SESSION_H
+#endif // INCLUDE_STONKY_HYPERLIQUID_HTTP_SESSION_H

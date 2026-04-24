@@ -3,19 +3,19 @@ Hyperliquid Data Models
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
-Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 */
 
 #ifndef HYPERLIQUID_API_HYPERLIQUID_MODELS_H
 #define HYPERLIQUID_API_HYPERLIQUID_MODELS_H
 
-#include "vk/hyperliquid/hyperliquid_enums.h"
-#include "vk/interface/i_json.h"
+#include "stonky/hyperliquid/hyperliquid_enums.h"
+#include "stonky/interface/i_json.h"
 #include <nlohmann/json.hpp>
 #include <vector>
 #include <string>
 
-namespace vk::hyperliquid {
+namespace stonky::hyperliquid {
 
 struct Candle final : IJson {
     std::int64_t startTime{};
@@ -45,6 +45,6 @@ struct FundingRate final : IJson {
     void fromJson(const nlohmann::json& json) override;
 };
 
-} // namespace vk::hyperliquid
+} // namespace stonky::hyperliquid
 
 #endif // HYPERLIQUID_API_HYPERLIQUID_MODELS_H

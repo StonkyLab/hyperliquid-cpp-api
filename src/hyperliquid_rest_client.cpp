@@ -3,15 +3,15 @@ Hyperliquid REST Client
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
-Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 */
 
-#include "vk/hyperliquid/hyperliquid_rest_client.h"
-#include "vk/hyperliquid/hyperliquid_http_session.h"
-#include "vk/hyperliquid/hyperliquid.h"
+#include "stonky/hyperliquid/hyperliquid_rest_client.h"
+#include "stonky/hyperliquid/hyperliquid_http_session.h"
+#include "stonky/hyperliquid/hyperliquid.h"
 #include <spdlog/spdlog.h>
 
-namespace vk::hyperliquid {
+namespace stonky::hyperliquid {
 
 struct RESTClient::P {
     std::shared_ptr<HTTPSession> httpSession;
@@ -111,4 +111,4 @@ RESTClient::getFundingRates(const std::string& coin, const std::int64_t startTim
     return m_p->getFundingRates(coin, startTime, endTime);
 }
 
-} // namespace vk::hyperliquid
+} // namespace stonky::hyperliquid

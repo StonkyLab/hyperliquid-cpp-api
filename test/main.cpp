@@ -1,11 +1,11 @@
-#include "vk/hyperliquid/hyperliquid_rest_client.h"
-#include "vk/hyperliquid/hyperliquid.h"
-#include "vk/utils/json_utils.h"
-#include "vk/utils/utils.h"
+#include "stonky/hyperliquid/hyperliquid_rest_client.h"
+#include "stonky/hyperliquid/hyperliquid.h"
+#include "stonky/utils/json_utils.h"
+#include "stonky/utils/utils.h"
 #include <iostream>
 #include <spdlog/spdlog.h>
 
-using namespace vk::hyperliquid;
+using namespace stonky::hyperliquid;
 
 void testCandles() {
     const auto restClient = std::make_unique<RESTClient>();

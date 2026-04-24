@@ -3,18 +3,18 @@ Hyperliquid REST Client
 
 Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
-Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@gmail.com>.
+Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 */
 
-#ifndef INCLUDE_VK_HYPERLIQUID_REST_CLIENT_H
-#define INCLUDE_VK_HYPERLIQUID_REST_CLIENT_H
+#ifndef INCLUDE_STONKY_HYPERLIQUID_REST_CLIENT_H
+#define INCLUDE_STONKY_HYPERLIQUID_REST_CLIENT_H
 
-#include "vk/hyperliquid/hyperliquid_models.h"
+#include "stonky/hyperliquid/hyperliquid_models.h"
 #include <string>
 #include <memory>
 #include <functional>
 
-namespace vk::hyperliquid {
+namespace stonky::hyperliquid {
 
 using onCandlesDownloaded = std::function<void(const std::vector<Candle>&)>;
 
@@ -55,6 +55,6 @@ public:
     getFundingRates(const std::string& coin, std::int64_t startTime, std::int64_t endTime) const;
 };
 
-} // namespace vk::hyperliquid
+} // namespace stonky::hyperliquid
 
-#endif // INCLUDE_VK_HYPERLIQUID_REST_CLIENT_H
+#endif // INCLUDE_STONKY_HYPERLIQUID_REST_CLIENT_H
