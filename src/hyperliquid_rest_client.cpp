@@ -43,12 +43,13 @@ struct RESTClient::P {
         return candles;
     }
 
-    [[nodiscard]] std::vector<FundingRate> getFundingRates(const std::string& coin, const std::int64_t startTime, const std::int64_t endTime) {
+    // fundingHistory uses flat params (no "req" wrapper), returns max 500 records per call
+    [[nodiscard]] std::vector<FundingRate> getFundingRatesPage(const std::string& coin, const std::int64_t startTime, const std::int64_t endTime) {
         nlohmann::json body;
         body["type"] = "fundingHistory";
-        body["req"]["coin"] = coin;
-        body["req"]["startTime"] = startTime;
-        body["req"]["endTime"] = endTime;
+        body["coin"] = coin;
+        body["startTime"] = startTime;
+        body["endTime"] = endTime;
 
         const auto response = checkResponse(httpSession->post("/info", body));
         const auto json = nlohmann::json::parse(response.body());
@@ -92,12 +93,21 @@ std::vector<Candle> RESTClient::getHistoricalPrices(const std::string& coin, con
 
     std::vector<Candle> retVal;
     std::int64_t batchFrom = from;
+    // Allow skipping up to this many consecutive empty batches before giving up.
+    // This handles the case where 'from' precedes the coin's listing date.
+    constexpr int maxConsecutiveEmpty = 5;
+    int consecutiveEmpty = 0;
 
     while (batchFrom < to) {
         const std::int64_t batchTo = std::min(batchFrom + intervalMs * maxCandlesPerBatch, to);
         auto candles = m_p->getCandles(coin, interval, batchFrom, batchTo);
 
-        if (candles.empty()) break;
+        if (candles.empty()) {
+            if (++consecutiveEmpty >= maxConsecutiveEmpty) break;
+            batchFrom = batchTo;
+            continue;
+        }
+        consecutiveEmpty = 0;
 
         // Drop the last candle if it is still open (its end would exceed 'to')
         if (candles.back().startTime + intervalMs > to) {
@@ -116,7 +126,23 @@ std::vector<Candle> RESTClient::getHistoricalPrices(const std::string& coin, con
 }
 
 std::vector<FundingRate> RESTClient::getFundingRates(const std::string& coin, const std::int64_t startTime, const std::int64_t endTime) const {
-    return m_p->getFundingRates(coin, startTime, endTime);
+    constexpr int pageLimit = 500;
+    std::vector<FundingRate> retVal;
+    std::int64_t pageStart = startTime;
+
+    while (pageStart < endTime) {
+        auto page = m_p->getFundingRatesPage(coin, pageStart, endTime);
+        if (page.empty()) break;
+
+        retVal.insert(retVal.end(), page.begin(), page.end());
+
+        if (static_cast<int>(page.size()) < pageLimit) break;
+
+        // Advance past the last received record (funding is hourly, +1ms avoids duplicate)
+        pageStart = page.back().time + 1;
+    }
+
+    return retVal;
 }
 
 std::vector<PerpAsset> RESTClient::getPerpetualAssets(const bool includeDelisted) const {
