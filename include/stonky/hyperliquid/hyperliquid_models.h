@@ -45,6 +45,16 @@ struct FundingRate final : IJson {
     void fromJson(const nlohmann::json& json) override;
 };
 
+struct PerpAsset final : IJson {
+    std::string name{};
+    int szDecimals{};
+    int maxLeverage{};
+    bool isDelisted{false};
+
+    [[nodiscard]] nlohmann::json toJson() const override;
+
+    void fromJson(const nlohmann::json& json) override;
+};
 } // namespace stonky::hyperliquid
 
 #endif // HYPERLIQUID_API_HYPERLIQUID_MODELS_H

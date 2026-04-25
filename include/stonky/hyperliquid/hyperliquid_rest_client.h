@@ -10,13 +10,13 @@ Copyright (c) 2022 Vitezslav Kot <vitezslav.kot@stonky.cz>, Stonky s.r.o.
 #define INCLUDE_STONKY_HYPERLIQUID_REST_CLIENT_H
 
 #include "stonky/hyperliquid/hyperliquid_models.h"
-#include <string>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <string>
 
 namespace stonky::hyperliquid {
 
-using onCandlesDownloaded = std::function<void(const std::vector<Candle>&)>;
+using onCandlesDownloaded = std::function<void(const std::vector<Candle> &)>;
 
 class RESTClient {
     struct P;
@@ -36,11 +36,11 @@ public:
      * @param writer Optional callback invoked for each downloaded batch
      * @return vector of Candle structures, chronologically ascending
      * @throws std::exception
-     * @see https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#candle-snapshot
+     * @see
+     * https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#candle-snapshot
      */
-    [[nodiscard]] std::vector<Candle>
-    getHistoricalPrices(const std::string& coin, CandleInterval interval, std::int64_t from, std::int64_t to,
-                        const onCandlesDownloaded& writer = {}) const;
+    [[nodiscard]] std::vector<Candle> getHistoricalPrices(const std::string &coin, CandleInterval interval, std::int64_t from, std::int64_t to,
+                                                          const onCandlesDownloaded &writer = {}) const;
 
     /**
      * Download historical funding rates
@@ -49,10 +49,20 @@ public:
      * @param endTime timestamp in ms (inclusive)
      * @return vector of FundingRate structures, chronologically ascending
      * @throws std::exception
-     * @see https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#funding-history
+     * @see
+     * https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#funding-history
      */
-    [[nodiscard]] std::vector<FundingRate>
-    getFundingRates(const std::string& coin, std::int64_t startTime, std::int64_t endTime) const;
+    [[nodiscard]] std::vector<FundingRate> getFundingRates(const std::string &coin, std::int64_t startTime, std::int64_t endTime) const;
+
+    /**
+     * Get all perpetual assets
+     * @param includeDelisted If true, delisted assets are included in the result
+     * @return vector of PerpAsset structures
+     * @throws std::exception
+     * @see
+     * https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-perpetuals-asset-contexts
+     */
+    [[nodiscard]] std::vector<PerpAsset> getPerpetualAssets(bool includeDelisted = false) const;
 };
 
 } // namespace stonky::hyperliquid

@@ -18,15 +18,12 @@ struct RESTClient::P {
 
     http::response<http::string_body> checkResponse(const http::response<http::string_body>& response) {
         if (response.result() != http::status::ok) {
-            throw std::runtime_error(
-                fmt::format("Bad response, code {}, msg: {}", response.result_int(), response.body()));
+            throw std::runtime_error(fmt::format("Bad response, code {}, msg: {}", response.result_int(), response.body()));
         }
         return response;
     }
 
-    [[nodiscard]] std::vector<Candle>
-    getCandles(const std::string& coin, const CandleInterval interval, const std::int64_t startTime,
-               const std::int64_t endTime) {
+    [[nodiscard]] std::vector<Candle> getCandles(const std::string& coin, const CandleInterval interval, const std::int64_t startTime, const std::int64_t endTime) {
         nlohmann::json body;
         body["type"] = "candleSnapshot";
         body["req"]["coin"] = coin;
@@ -38,7 +35,7 @@ struct RESTClient::P {
         const auto json = nlohmann::json::parse(response.body());
 
         std::vector<Candle> candles;
-        for (const auto& el : json.items()) {
+        for (const auto& el: json.items()) {
             Candle candle;
             candle.fromJson(el.value());
             candles.push_back(candle);
@@ -46,8 +43,7 @@ struct RESTClient::P {
         return candles;
     }
 
-    [[nodiscard]] std::vector<FundingRate>
-    getFundingRates(const std::string& coin, const std::int64_t startTime, const std::int64_t endTime) {
+    [[nodiscard]] std::vector<FundingRate> getFundingRates(const std::string& coin, const std::int64_t startTime, const std::int64_t endTime) {
         nlohmann::json body;
         body["type"] = "fundingHistory";
         body["req"]["coin"] = coin;
@@ -58,24 +54,38 @@ struct RESTClient::P {
         const auto json = nlohmann::json::parse(response.body());
 
         std::vector<FundingRate> rates;
-        for (const auto& el : json.items()) {
+        for (const auto& el: json.items()) {
             FundingRate fr;
             fr.fromJson(el.value());
             rates.push_back(fr);
         }
         return rates;
     }
+
+    [[nodiscard]] std::vector<PerpAsset> getPerpetualAssets() {
+        nlohmann::json body;
+        body["type"] = "meta";
+
+        const auto response = checkResponse(httpSession->post("/info", body));
+        const auto json = nlohmann::json::parse(response.body());
+
+        std::vector<PerpAsset> assets;
+        for (const auto& el : json.at("universe").items()) {
+            PerpAsset asset;
+            asset.fromJson(el.value());
+            assets.push_back(asset);
+        }
+        return assets;
+    }
+
 };
 
-RESTClient::RESTClient() : m_p(std::make_unique<P>()) {
-    m_p->httpSession = std::make_shared<HTTPSession>();
-}
+RESTClient::RESTClient() : m_p(std::make_unique<P>()) { m_p->httpSession = std::make_shared<HTTPSession>(); }
 
 RESTClient::~RESTClient() = default;
 
-std::vector<Candle>
-RESTClient::getHistoricalPrices(const std::string& coin, const CandleInterval interval, std::int64_t from,
-                                const std::int64_t to, const onCandlesDownloaded& writer) const {
+std::vector<Candle> RESTClient::getHistoricalPrices(const std::string& coin, const CandleInterval interval, std::int64_t from, const std::int64_t to,
+                                                    const onCandlesDownloaded& writer) const {
     const std::int64_t intervalMs = Hyperliquid::numberOfMsForCandleInterval(interval);
     // Batch in windows of at most 5000 candles to keep request sizes reasonable
     constexpr std::int64_t maxCandlesPerBatch = 5000;
@@ -105,10 +115,15 @@ RESTClient::getHistoricalPrices(const std::string& coin, const CandleInterval in
     return retVal;
 }
 
-std::vector<FundingRate>
-RESTClient::getFundingRates(const std::string& coin, const std::int64_t startTime,
-                            const std::int64_t endTime) const {
+std::vector<FundingRate> RESTClient::getFundingRates(const std::string& coin, const std::int64_t startTime, const std::int64_t endTime) const {
     return m_p->getFundingRates(coin, startTime, endTime);
 }
 
+std::vector<PerpAsset> RESTClient::getPerpetualAssets(const bool includeDelisted) const {
+    auto assets = m_p->getPerpetualAssets();
+    if (!includeDelisted) {
+        std::erase_if(assets, [](const PerpAsset& a) { return a.isDelisted; });
+    }
+    return assets;
+}
 } // namespace stonky::hyperliquid
