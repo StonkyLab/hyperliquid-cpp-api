@@ -43,8 +43,8 @@ if (MODULE_MANAGER)
 else ()
     add_library(hyperliquid_api STATIC ${SOURCES} ${HEADERS})
 
-    add_executable(test test/main.cpp)
-    target_link_libraries(test PRIVATE spdlog::spdlog_header_only hyperliquid_api OpenSSL::Crypto)
+    add_executable(hyperliquid_test test/main.cpp)
+    target_link_libraries(hyperliquid_test PRIVATE spdlog::spdlog_header_only hyperliquid_api OpenSSL::Crypto)
 
 endif ()
 
