@@ -93,21 +93,31 @@ std::vector<Candle> RESTClient::getHistoricalPrices(const std::string& coin, con
 
     std::vector<Candle> retVal;
     std::int64_t batchFrom = from;
-    // Allow skipping up to this many consecutive empty batches before giving up.
-    // This handles the case where 'from' precedes the coin's listing date.
-    constexpr int maxConsecutiveEmpty = 5;
-    int consecutiveEmpty = 0;
+    // When skipping over empty pre-listing time, jump at least this far per API call
+    // so that short intervals (1m, 5m) don't make hundreds of requests scanning years
+    // of missing data. Within this distance of 'to' we revert to normal batch size
+    // so that recent data isn't missed regardless of interval.
+    constexpr int64_t coarseSkipMs = 30LL * 24 * 3600 * 1000; // 30 days
+    constexpr int64_t maxEmptySearchMs = 5LL * 365 * 24 * 3600 * 1000; // 5 years
+    int64_t emptySearchedMs = 0;
 
     while (batchFrom < to) {
         const std::int64_t batchTo = std::min(batchFrom + intervalMs * maxCandlesPerBatch, to);
         auto candles = m_p->getCandles(coin, interval, batchFrom, batchTo);
 
         if (candles.empty()) {
-            if (++consecutiveEmpty >= maxConsecutiveEmpty) break;
-            batchFrom = batchTo;
+            const int64_t remaining = to - batchFrom;
+            // Switch to fine batches when within 2x coarseSkip of the end so that
+            // data starting anywhere in the last coarseSkip window isn't missed.
+            const int64_t skip = (remaining > 2 * coarseSkipMs)
+                                     ? std::max(batchTo - batchFrom, coarseSkipMs)
+                                     : batchTo - batchFrom;
+            emptySearchedMs += skip;
+            if (emptySearchedMs >= maxEmptySearchMs) break;
+            batchFrom = std::min(batchFrom + skip, to);
             continue;
         }
-        consecutiveEmpty = 0;
+        emptySearchedMs = 0;
 
         // Drop the last candle if it is still open (its end would exceed 'to')
         if (candles.back().startTime + intervalMs > to) {
