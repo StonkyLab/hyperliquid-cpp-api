@@ -40,6 +40,10 @@ set(SOURCES
 
 if (MODULE_MANAGER)
     add_library(hyperliquid_api SHARED ${SOURCES} ${HEADERS})
+    # On Windows a SHARED lib exports nothing without explicit dllexport, so no
+    # import .lib is produced and consumers fail with LNK1104. Auto-export all
+    # symbols (no-op on non-MSVC, where shared libs already export everything).
+    set_target_properties(hyperliquid_api PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 else ()
     add_library(hyperliquid_api STATIC ${SOURCES} ${HEADERS})
 
