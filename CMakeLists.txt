@@ -40,20 +40,18 @@ set(SOURCES
 
 if (MODULE_MANAGER)
     add_library(hyperliquid_api SHARED ${SOURCES} ${HEADERS})
-    # On Windows a SHARED lib exports nothing without explicit dllexport, so no
-    # import .lib is produced and consumers fail with LNK1104. Auto-export all
-    # symbols (no-op on non-MSVC, where shared libs already export everything).
-    set_target_properties(hyperliquid_api PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 else ()
     add_library(hyperliquid_api STATIC ${SOURCES} ${HEADERS})
-
-    add_executable(hyperliquid_test test/main.cpp)
-    target_link_libraries(hyperliquid_test PRIVATE spdlog::spdlog_header_only hyperliquid_api OpenSSL::Crypto)
-
 endif ()
 
 target_link_libraries(hyperliquid_api PRIVATE spdlog::spdlog_header_only OpenSSL::Crypto OpenSSL::SSL stonky_common nlohmann_json::nlohmann_json)
 
 if (NOT MSVC)
     target_link_libraries(hyperliquid_api PRIVATE atomic)
+endif ()
+
+option(ENABLE_TESTS "Build hyperliquid_api test executables" OFF)
+if (ENABLE_TESTS)
+    add_executable(hyperliquid_test test/main.cpp)
+    target_link_libraries(hyperliquid_test PRIVATE spdlog::spdlog_header_only hyperliquid_api OpenSSL::Crypto)
 endif ()
