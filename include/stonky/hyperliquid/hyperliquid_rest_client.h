@@ -63,6 +63,27 @@ public:
      * https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-perpetuals-asset-contexts
      */
     [[nodiscard]] std::vector<PerpAsset> getPerpetualAssets(bool includeDelisted = false) const;
+
+    /**
+     * All perp markets with their live context (metaAndAssetCtxs): current
+     * hourly funding, mark/mid/oracle prices, szDecimals and — crucially — the
+     * assetIndex trading actions address the coin by (its position in the FULL
+     * universe, delisted entries included).
+     */
+    [[nodiscard]] std::vector<AssetContext> getAssetContexts() const;
+
+    /**
+     * Perp account state: equity, withdrawable and open positions.
+     * @param userAddress the MASTER account address ("0x..."), not an API wallet
+     */
+    [[nodiscard]] ClearinghouseState getClearinghouseState(const std::string &userAddress) const;
+
+    /**
+     * The account's recent fills (most recent first, up to the venue cap of
+     * ~2000). Each carries a unique tid and, when set at order time, the cloid
+     * — the WS-gap fill reconcile keys on those.
+     */
+    [[nodiscard]] std::vector<UserFill> getUserFills(const std::string &userAddress) const;
 };
 
 } // namespace stonky::hyperliquid

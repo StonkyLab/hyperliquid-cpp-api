@@ -32,8 +32,12 @@ HTTPSession::HTTPSession(const std::string& host) : m_p(std::make_unique<P>()) {
 HTTPSession::~HTTPSession() = default;
 
 http::response<http::string_body> HTTPSession::post(const std::string& path, const nlohmann::json& json) const {
+    return post(path, json.dump());
+}
+
+http::response<http::string_body> HTTPSession::post(const std::string& path, const std::string& body) const {
     http::request<http::string_body> req{http::verb::post, path, 11};
-    req.body() = json.dump();
+    req.body() = body;
     req.prepare_payload();
     req.set(http::field::content_type, "application/json");
     return m_p->request(req);

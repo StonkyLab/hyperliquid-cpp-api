@@ -30,13 +30,24 @@ set(HEADERS
         include/stonky/hyperliquid/hyperliquid_enums.h
         include/stonky/hyperliquid/hyperliquid_models.h
         include/stonky/hyperliquid/hyperliquid_http_session.h
-        include/stonky/hyperliquid/hyperliquid_rest_client.h)
+        include/stonky/hyperliquid/hyperliquid_rest_client.h
+        include/stonky/hyperliquid/hyperliquid_signer.h
+        include/stonky/hyperliquid/hyperliquid_exchange_client.h
+        include/stonky/hyperliquid/hyperliquid_ws_session.h
+        include/stonky/hyperliquid/hyperliquid_ws_stream_manager.h
+        include/stonky/hyperliquid/hyperliquid_execution_gateway.h
+        include/stonky/hyperliquid/tls_verify.h)
 
 set(SOURCES
         src/hyperliquid.cpp
         src/hyperliquid_models.cpp
         src/hyperliquid_http_session.cpp
-        src/hyperliquid_rest_client.cpp)
+        src/hyperliquid_rest_client.cpp
+        src/hyperliquid_signer.cpp
+        src/hyperliquid_exchange_client.cpp
+        src/hyperliquid_ws_session.cpp
+        src/hyperliquid_ws_stream_manager.cpp
+        src/hyperliquid_execution_gateway.cpp)
 
 if (MODULE_MANAGER)
     add_library(hyperliquid_api SHARED ${SOURCES} ${HEADERS})
@@ -44,7 +55,10 @@ else ()
     add_library(hyperliquid_api STATIC ${SOURCES} ${HEADERS})
 endif ()
 
-target_link_libraries(hyperliquid_api PRIVATE spdlog::spdlog_header_only OpenSSL::Crypto OpenSSL::SSL stonky_common nlohmann_json::nlohmann_json)
+# libsecp256k1: recoverable ECDSA for the EIP-712 action signer.
+find_library(SECP256K1_LIB secp256k1 REQUIRED)
+
+target_link_libraries(hyperliquid_api PRIVATE spdlog::spdlog_header_only OpenSSL::Crypto OpenSSL::SSL stonky_common nlohmann_json::nlohmann_json ${SECP256K1_LIB})
 
 if (NOT MSVC)
     target_link_libraries(hyperliquid_api PRIVATE atomic)
@@ -54,4 +68,10 @@ option(ENABLE_TESTS "Build hyperliquid_api test executables" OFF)
 if (ENABLE_TESTS)
     add_executable(hyperliquid_test test/main.cpp)
     target_link_libraries(hyperliquid_test PRIVATE spdlog::spdlog_header_only hyperliquid_api OpenSSL::Crypto)
+
+    add_executable(hyperliquid_signing_vectors test/signing_vectors.cpp)
+    target_link_libraries(hyperliquid_signing_vectors PRIVATE spdlog::spdlog_header_only hyperliquid_api OpenSSL::Crypto nlohmann_json::nlohmann_json)
+
+    add_executable(hyperliquid_market_probe test/market_probe.cpp)
+    target_link_libraries(hyperliquid_market_probe PRIVATE spdlog::spdlog_header_only hyperliquid_api OpenSSL::Crypto OpenSSL::SSL nlohmann_json::nlohmann_json)
 endif ()

@@ -30,6 +30,13 @@ public:
     ~HTTPSession();
 
     [[nodiscard]] http::response<http::string_body> post(const std::string& path, const nlohmann::json& json) const;
+
+    /**
+     * POST a pre-serialised JSON body verbatim. The /exchange payload is signed
+     * over a field-order-sensitive serialisation (ordered_json), so the caller
+     * dumps it itself rather than letting nlohmann::json re-order keys.
+     */
+    [[nodiscard]] http::response<http::string_body> post(const std::string& path, const std::string& body) const;
 };
 } // namespace stonky::hyperliquid
 

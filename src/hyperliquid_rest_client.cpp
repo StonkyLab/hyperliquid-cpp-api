@@ -162,4 +162,70 @@ std::vector<PerpAsset> RESTClient::getPerpetualAssets(const bool includeDelisted
     }
     return assets;
 }
+
+std::vector<AssetContext> RESTClient::getAssetContexts() const {
+    nlohmann::json body;
+    body["type"] = "metaAndAssetCtxs";
+
+    const auto response = m_p->checkResponse(m_p->httpSession->post("/info", body));
+    const auto json = nlohmann::json::parse(response.body());
+
+    // Response is [meta, assetCtxs]; universe[i] pairs with assetCtxs[i] and i
+    // IS the asset id used by trading actions.
+    if (!json.is_array() || json.size() < 2) {
+        throw std::runtime_error("Hyperliquid metaAndAssetCtxs: unexpected response shape");
+    }
+
+    const auto& universe = json.at(0).at("universe");
+    const auto& ctxs = json.at(1);
+
+    std::vector<AssetContext> contexts;
+    contexts.reserve(universe.size());
+
+    for (std::size_t i = 0; i < universe.size(); ++i) {
+        AssetContext ctx;
+        ctx.fromJson(universe.at(i)); // name, szDecimals, isDelisted
+
+        if (i < ctxs.size()) {
+            ctx.fromJson(ctxs.at(i)); // funding, markPx, midPx, ...
+        }
+
+        ctx.assetIndex = static_cast<int>(i);
+        contexts.push_back(ctx);
+    }
+
+    return contexts;
+}
+
+ClearinghouseState RESTClient::getClearinghouseState(const std::string& userAddress) const {
+    nlohmann::json body;
+    body["type"] = "clearinghouseState";
+    body["user"] = userAddress;
+
+    const auto response = m_p->checkResponse(m_p->httpSession->post("/info", body));
+
+    ClearinghouseState state;
+    state.fromJson(nlohmann::json::parse(response.body()));
+    return state;
+}
+std::vector<UserFill> RESTClient::getUserFills(const std::string& userAddress) const {
+    nlohmann::json body;
+    body["type"] = "userFills";
+    body["user"] = userAddress;
+
+    const auto response = m_p->checkResponse(m_p->httpSession->post("/info", body));
+    const auto json = nlohmann::json::parse(response.body());
+
+    std::vector<UserFill> fills;
+
+    if (json.is_array()) {
+        for (const auto& el : json) {
+            UserFill fill;
+            fill.fromJson(el);
+            fills.push_back(fill);
+        }
+    }
+
+    return fills;
+}
 } // namespace stonky::hyperliquid
